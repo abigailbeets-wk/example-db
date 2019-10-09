@@ -80,10 +80,21 @@ func (handler *ProjectHandler) GetAllProjectsHandler(w http.ResponseWriter, r *h
 }
 
 func (handler *ProjectHandler) GetProjectByIDHandler(w http.ResponseWriter, r *http.Request) {
-	workflow := Workflow{
+	act := activity.Activity{
+		ActivityID: 1,
+		Name:       "AddPrefix",
+		PrettyName: "Add Prefix",
+		Index:      0,
+		Hits:       0,
+		CreatedBy:  "Abby",
+		CreatedOn:  "10-08-2019",
+		Parameters: []activity.Parameter{activity.Parameter{ParameterID: 1, Name: "Param1", Value: "Value1"}},
+	}
+
+	wf := Workflow{
 		WorkflowID: 1,
 		Name:       "My Workflow",
-		Activities: []activity.Activity{},
+		Activities: []activity.Activity{act},
 	}
 
 	sheet := Sheet{
@@ -92,7 +103,7 @@ func (handler *ProjectHandler) GetProjectByIDHandler(w http.ResponseWriter, r *h
 		HeaderRow:  1,
 		Name:       "My Sheet",
 		Revision:   "58135",
-		Workflows:  []Workflow{workflow},
+		Workflows:  []Workflow{wf},
 	}
 
 	file := File{
