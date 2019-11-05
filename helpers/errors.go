@@ -1,14 +1,14 @@
 package helpers
 
-type AdaptorError struct {
+type DBError struct {
 	Code    int
 	Message string
 }
 
-func (err AdaptorError) Error() string {
+func (err DBError) Error() string {
 	return err.Message
 }
 
-func (err AdaptorError) StatusCode() int {
+func (err DBError) StatusCode() int {
 	return err.Code
 }

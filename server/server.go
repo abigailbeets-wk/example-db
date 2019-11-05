@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+// TODO maybe move this to main.go for DB injection
+
 func StartServer() {
 	port := "8080"
 	r := router.NewRouter()

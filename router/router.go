@@ -1,9 +1,11 @@
 package router
 
 import (
-	"example-db/activity"
+	"database/sql"
 	"example-db/project"
-	"example-db/workflow"
+	"fmt"
+	"log"
+	"os"
 
 	"github.com/go-chi/chi"
 )
@@ -16,25 +18,39 @@ func NewRouter() *chi.Mux {
 }
 
 func initializeRoutes(r *chi.Mux) {
-	projectHandler := project.ProjectHandler{}
-	workflowHandler := workflow.WorkflowHandler{}
-	activityHandler := activity.ActivityHandler{}
+	db := initializeDatabase()
+
+	projectRepository := project.ProjectRepository{DB: db}
+	projectService := project.ProjectService{Repository: &projectRepository}
+	projectHandler := project.ProjectHandler{Service: &projectService}
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Route("/parsing-projects", func(r chi.Router) {
 			r.Get("/", projectHandler.GetAllProjectsHandler)
-			r.Get("/{projectID}", projectHandler.GetProjectByIDHandler)
-			r.Post("/", projectHandler.CreateProjectHandler)
-
-			r.Route("/workflows", func(r chi.Router) {
-				r.Get("/", workflowHandler.GetAllWorkflowsHandler)
-				r.Get("/{workflowID}", workflowHandler.GetWorkflowByIDHandler)
-
-				r.Route("/activities", func(r chi.Router) {
-					r.Get("/", activityHandler.GetAllActivitiesHandler)
-					r.Get("/{activityID}", activityHandler.GetActivityByIDHandler)
-				})
-			})
 		})
 	})
+}
+
+func initializeDatabase() *sql.DB {
+	username := os.Getenv("DATABASE_USERNAME")
+	pass := os.Getenv("DATABASE_PASSWORD")
+	dbPort := os.Getenv("DATABASE_PORT")
+	dbHost := os.Getenv("DATABASE_HOST")
+	dbName := os.Getenv("DATABASE_NAME")
+
+	dbInfo := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, pass, dbHost, dbPort, dbName)
+
+	db, err := sql.Open("mysql", dbInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// TODO remember how I used to do this the right way? Me neither
+	// defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Successfully pinged database")
+	return db
 }
