@@ -29,6 +29,10 @@
   name = "github.com/go-chi/chi"
   version = "4.0.2"
 
+[[override]]
+  name = "gopkg.in/fsnotify.v1"
+  source = "https://github.com/fsnotify/fsnotify.git"
+
 [prune]
   go-tests = true
   unused-packages = true
