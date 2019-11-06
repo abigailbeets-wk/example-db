@@ -24,6 +24,7 @@ func (handler *ProjectHandler) GetAllProjectsHandler(w http.ResponseWriter, r *h
 
 	projects, err := handler.Service.GetAllProjects(accountID)
 	if err != nil {
+		// this would be replaced with app_intelligence_go
 		log.Println(err)
 		helpers.RespondWithError(w, http.StatusInternalServerError, "error retrieving projects")
 		return
