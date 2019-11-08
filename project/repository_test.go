@@ -1,11 +1,14 @@
 package project_test
 
 import (
+	"errors"
+
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	. "example-db/project"
+	"example-db/helpers"
 )
 
 var _ = Describe("ProjectRepository", func() {
@@ -18,7 +21,7 @@ var _ = Describe("ProjectRepository", func() {
 			expectedProject := Project{
 				ProjectID:  1,
 				AccountID:  testAccountID,
-				Name:       "TestProject",
+				Name:       "Golden Gods, Inc.",
 				Type:       "Parsing",
 				CreatedBy:  "Dennis Reynolds",
 				CreatedOn:  "October 12, 2019",
@@ -52,6 +55,29 @@ var _ = Describe("ProjectRepository", func() {
 			Expect(project.CreatedOn).To(Equal(expectedProject.CreatedOn))
 			Expect(project.ModifiedBy).To(Equal(expectedProject.ModifiedBy))
 			Expect(project.ModifiedOn).To(Equal(expectedProject.ModifiedOn))
+		})
+
+		It("should return a DBError with a 500 code on failure", func() {
+			db, mockDB, _ := sqlmock.New()
+			defer db.Close()
+
+			testAccountID := "accountid"
+
+			mockDB.ExpectQuery("SELECT (.+) FROM DataModeler.Project").WillReturnError(errors.New("BLAMO"))
+			
+			projectRepository := ProjectRepository{DB: db}
+			_, err := projectRepository.GetAllProjectsForAccount(testAccountID)
+			Expect(err).To(HaveOccurred())
+
+			if dbErr, ok := err.(helpers.DBError); ok {
+				Expect(dbErr.Code).To(Equal(500))
+			} else {
+				Fail("wrong type of error returned")
+			}
+
+			if err := mockDB.ExpectationsWereMet(); err != nil {
+				Fail(err.Error())
+			}
 		})
 	})
 })
