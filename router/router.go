@@ -44,7 +44,7 @@ func initializeDatabase() *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// TODO remember how I used to do this the right way? Me neither
+	// TODO remember how I used to do this the right way?
 	// defer db.Close()
 
 	err = db.Ping()
