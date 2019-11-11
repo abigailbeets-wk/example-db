@@ -57,6 +57,30 @@ var _ = Describe("ProjectRepository", func() {
 			Expect(project.ModifiedOn).To(Equal(expectedProject.ModifiedOn))
 		})
 
+		It("should return an empty list of projects when no projects are found for the given accountID", func() {
+			db, mockDB, _ := sqlmock.New()
+			defer db.Close()
+
+			testAccountID := "accountid"
+
+			columns := []string{"ProjectID", "AccountID", "Name",
+				"Type", "CreatedBy", "CreatedDate",
+				"ModifiedBy", "ModifiedDate"}
+
+			mockDB.ExpectQuery("SELECT (.+) FROM DataModeler.Project").
+				WillReturnRows(sqlmock.NewRows(columns))
+
+			projectRepository := ProjectRepository{DB: db}
+			projects, err := projectRepository.GetAllProjectsForAccount(testAccountID)
+			Expect(err).ToNot(HaveOccurred())
+
+			if err := mockDB.ExpectationsWereMet(); err != nil {
+				Fail(err.Error())
+			}
+
+			Expect(len(projects)).To(Equal(0))
+		})
+
 		It("should return a DBError with a 500 code on failure", func() {
 			db, mockDB, _ := sqlmock.New()
 			defer db.Close()
