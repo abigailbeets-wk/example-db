@@ -62,7 +62,6 @@ var _ = Describe("ProjectRepository", func() {
 			defer db.Close()
 
 			testAccountID := "accountid"
-
 			columns := []string{"ProjectID", "AccountID", "Name",
 				"Type", "CreatedBy", "CreatedDate",
 				"ModifiedBy", "ModifiedDate"}
@@ -86,7 +85,6 @@ var _ = Describe("ProjectRepository", func() {
 			defer db.Close()
 
 			testAccountID := "accountid"
-
 			mockDB.ExpectQuery("SELECT (.+) FROM DataModeler.Project").WillReturnError(errors.New("BLAMO"))
 			
 			projectRepository := ProjectRepository{DB: db}
