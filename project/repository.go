@@ -38,7 +38,7 @@ func (repository *ProjectRepository) GetAllProjectsForAccount(accountID string) 
 	}
 	defer rows.Close()
 
-	projects := []Project{}
+	var projects []Project
 	for rows.Next() {
 		project := Project{}
 		err := rows.Scan(&project.ProjectID, &project.AccountID, &project.Name, &project.Type, &project.CreatedBy, &project.CreatedOn, &project.ModifiedBy, &project.ModifiedOn)
